@@ -1,8 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import { db } from './config/firebaseConfig.js';
 
-dotenv.config();
 
 const app = express();
 
@@ -15,9 +14,18 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => {
-    res.send('Server is running');
-});
+app.use(express.static('public'));
+
+app.get('/movies', async(req, res) => {
+    try {
+        const snapshot = await db.collection('movies').get();
+        const movies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.json({ movies });
+    }
+    catch (error) {
+        console.error('Error fetching movies:', error);
+        res.status(500).json({ message: 'Error fetching movies' });
+}});
 
 app.use((err, req, res, next) => {
     console.error(err);
