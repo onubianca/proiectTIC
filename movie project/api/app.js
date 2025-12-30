@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { db } from './config/firebaseConfig.js';
+import movieRoutes from './routes/movies.js';   
 
 
 const app = express();
@@ -14,7 +15,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static('public'));
+app.use(express.static('web'));
+
+app.use('/movies', movieRoutes);
 
 app.get('/movies', async(req, res) => {
     try {
